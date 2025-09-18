@@ -1,0 +1,26 @@
+# OS
+Thumbs.db
+Desktop.ini
+
+# Node/npm artifacts
+node_modules/
+npm-debug.log*
+pnpm-lock.yaml
+yarn.lock
+
+# Logs
+logs/
+*.log
+
+# Editor
+.vscode/
+.idea/
+
+# Build/Dist
+dist/
+build/
+out/
+
+# Mac
+.DS_Store
+

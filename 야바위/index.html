@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>야바위 (Shell Game) | Tech.LAB</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="brand"><span class="logo">Tech.LAB</span><span class="title">야바위</span></h1>
+    <nav class="top-actions">
+      <button id="btnShowRules" class="ghost">규칙</button>
+      <button id="btnShowLeaderboard" class="ghost">순위</button>
+    </nav>
+  </header>
+
+  <!-- 홈: 단계 선택 + 큰 시작 버튼 (센터 정렬) -->
+  <main id="screenHome" class="screen active">
+    <section class="home-card">
+      <h2 class="home-title">단계를 고르고 시작하세요</h2>
+
+      <div class="stage-grid" role="radiogroup" aria-label="단계 선택">
+        <!-- 선택되면 .selected -->
+        <button class="stage-card selected" data-level="1" role="radio" aria-checked="true">
+          <div class="stage-no">1</div>
+          <div class="stage-desc">컵 3 · 느림 · 공개</div>
+        </button>
+        <button class="stage-card" data-level="2" role="radio" aria-checked="false">
+          <div class="stage-no">2</div>
+          <div class="stage-desc">컵 5 · 보통 · 공개</div>
+        </button>
+        <button class="stage-card" data-level="3" role="radio" aria-checked="false">
+          <div class="stage-no">3</div>
+          <div class="stage-desc">컵 5 · 빠름 · 공개</div>
+        </button>
+        <button class="stage-card" data-level="4" role="radio" aria-checked="false">
+          <div class="stage-no">4</div>
+          <div class="stage-desc">컵 5 · 보통 · 비공개(찍기)</div>
+        </button>
+      </div>
+
+      <div class="home-cta">
+        <button id="btnStart" class="start-big">게임 시작</button>
+      </div>
+
+      <p class="home-note">선택 단계로 바로 시작합니다. (섞기 → 선택 → 공개)</p>
+    </section>
+  </main>
+
+  <!-- 게임 화면 -->
+  <section id="screenGame" class="screen">
+    <div class="hud">
+      <div class="badges">
+        <span class="badge">단계 <b id="hudLevel">1</b></span>
+        <span class="badge">점수 <b id="hudScore">0</b></span>
+        <span class="badge">상태 <b id="hudState">준비</b></span>
+      </div>
+      <div class="controls">
+        <button id="btnShuffle" class="primary">섞기</button>
+        <button id="btnReveal" class="secondary" disabled>정답 공개</button>
+        <button id="btnQuit" class="ghost">그만</button>
+      </div>
+    </div>
+
+    <div id="table" class="table" aria-live="polite" aria-label="게임 테이블"></div>
+  </section>
+
+  <!-- 결과 화면 -->
+  <section id="screenResult" class="screen">
+    <div class="result-card">
+      <h2>결과</h2>
+      <div id="resultEmoji" class="result-emoji">🙂</div>
+      <p id="resultText" class="result-text">결과가 여기에 표시됩니다.</p>
+
+      <div class="score-strip">이번 판: <b id="roundScore">0</b> · 누적: <b id="totalScore">0</b></div>
+
+      <form id="saveScoreForm" class="save-form" autocomplete="off">
+        <label>이름(3~12자): <input id="playerName" maxlength="12" required></label>
+        <button class="secondary" type="submit">점수 저장</button>
+      </form>
+
+      <div class="result-actions">
+        <button id="btnRetry" class="primary">같은 단계 재도전</button>
+        <button id="btnHome" class="ghost">메인으로</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 규칙 모달 -->
+  <dialog id="rulesDialog" class="modal">
+    <form method="dialog">
+      <h3>게임 규칙</h3>
+      <ol>
+        <li>공 위치를 보여준 뒤(4단계 제외) 컵을 연속으로 섞습니다.</li>
+        <li>섞기가 끝나면 정답 컵을 클릭합니다.</li>
+        <li>클릭 시 컵이 들어올려지며(리프트) 결과를 공개합니다.</li>
+      </ol>
+      <p class="small">점수: 1/2/3/4단계 순서로 10·20·30·50점</p>
+      <menu><button value="cancel" class="ghost">닫기</button></menu>
+    </form>
+  </dialog>
+
+  <!-- 순위 모달 -->
+  <dialog id="leaderboardDialog" class="modal">
+    <form method="dialog">
+      <h3>상위 5명</h3>
+      <ol id="leaderboardList" class="leaderboard"></ol>
+      <menu><button value="cancel" class="ghost">닫기</button></menu>
+    </form>
+  </dialog>
+
+  <footer class="app-footer"><small>© Tech.LAB • 축제 부스 데모</small></footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
