@@ -1,118 +1,120 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>야바위 (Shell Game) | Tech.LAB</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500;700;800&display=swap" rel="stylesheet">
+  <title>야바위 게임</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="app-header">
-    <h1 class="brand"><span class="logo">Tech.LAB</span><span class="title">야바위</span></h1>
-    <nav class="top-actions">
-      <button id="btnShowRules" class="ghost">규칙</button>
-      <button id="btnShowLeaderboard" class="ghost">순위</button>
+  <header class="site-header">
+    <h1>야바위 게임</h1>
+    <nav class="tabs">
+      <button id="tab-home" class="tab active">홈</button>
+      <button id="tab-game" class="tab">게임</button>
+      <button id="tab-result" class="tab">결과</button>
     </nav>
   </header>
 
-  <!-- 홈: 단계 선택 + 큰 시작 버튼 (센터 정렬) -->
-  <main id="screenHome" class="screen active">
-    <section class="home-card">
-      <h2 class="home-title">단계를 고르고 시작하세요</h2>
+  <main>
+    <!-- 홈 화면 -->
+    <section id="view-home" class="view active" aria-label="홈 화면">
+      <div class="panel">
+        <h2>시작하기</h2>
+        <p>난이도를 고르고 게임을 시작하세요.</p>
+        <div class="row">
+          <label for="level">난이도</label>
+          <select id="level" aria-label="난이도 선택">
+            <option value="1">1단계 — 느리고 3개</option>
+            <option value="2">2단계 — 보통 5개</option>
+            <option value="3">3단계 — 아주 빠르고 5개</option>
+            <option value="4">4단계 — 찍기(초고속·숨김 셔플)</option>
+          </select>
+        </div>
+        <div class="row">
+          <button id="btn-setup" class="primary">게임 시작</button>
+        </div>
+        <div class="row">
+          <button id="btn-rules">규칙 보기</button>
+          <button id="btn-leaderboard">순위 보기</button>
+        </div>
+      </div>
+    </section>
 
-      <div class="stage-grid" role="radiogroup" aria-label="단계 선택">
-        <!-- 선택되면 .selected -->
-        <button class="stage-card selected" data-level="1" role="radio" aria-checked="true">
-          <div class="stage-no">1</div>
-          <div class="stage-desc">컵 3 · 느림 · 공개</div>
-        </button>
-        <button class="stage-card" data-level="2" role="radio" aria-checked="false">
-          <div class="stage-no">2</div>
-          <div class="stage-desc">컵 5 · 보통 · 공개</div>
-        </button>
-        <button class="stage-card" data-level="3" role="radio" aria-checked="false">
-          <div class="stage-no">3</div>
-          <div class="stage-desc">컵 5 · 빠름 · 공개</div>
-        </button>
-        <button class="stage-card" data-level="4" role="radio" aria-checked="false">
-          <div class="stage-no">4</div>
-          <div class="stage-desc">컵 5 · 보통 · 비공개(찍기)</div>
-        </button>
+    <!-- 게임 화면 -->
+    <section id="view-game" class="view" aria-label="게임 화면">
+      <div class="sidebar panel">
+        <div class="hud">
+          <div><strong>상태</strong> <span id="hud-state">준비</span></div>
+          <div><strong>라운드</strong> <span id="hud-round">0</span></div>
+          <div><strong>성공</strong> <span id="hud-score">0</span></div>
+          <div><strong>실패</strong> <span id="hud-miss">0</span></div>
+        </div>
+        <div class="row btns">
+          <button id="btn-shuffle" disabled>섞기</button>
+          <button id="btn-reveal" disabled title="4단계에서만 사용 가능">정답 공개</button>
+          <button id="btn-restart">처음으로</button>
+        </div>
       </div>
 
-      <div class="home-cta">
-        <button id="btnStart" class="start-big">게임 시작</button>
+      <div class="stage panel">
+        <div id="table">
+          <div id="board" aria-live="polite" aria-label="게임 보드"></div>
+          <div id="ball" aria-hidden="true"></div>
+        </div>
+        <p class="tip">
+          모든 단계에서 공이 잠깐 보였다가 숨습니다. 셔플 중에는 공이 완전히 숨겨집니다.
+        </p>
       </div>
+    </section>
 
-      <p class="home-note">선택 단계로 바로 시작합니다. (섞기 → 선택 → 공개)</p>
+    <!-- 결과 화면 -->
+    <section id="view-result" class="view" aria-label="결과 화면">
+      <div class="panel">
+        <h2>결과</h2>
+        <p>성공 <strong id="res-score">0</strong> · 실패 <strong id="res-miss">0</strong></p>
+        <div class="row">
+          <label for="player-name">이름</label>
+          <input id="player-name" placeholder="이름 입력" />
+          <button id="btn-save">점수 저장</button>
+        </div>
+        <div class="row">
+          <button id="btn-to-home">다시 홈으로</button>
+        </div>
+      </div>
     </section>
   </main>
 
-  <!-- 게임 화면 -->
-  <section id="screenGame" class="screen">
-    <div class="hud">
-      <div class="badges">
-        <span class="badge">단계 <b id="hudLevel">1</b></span>
-        <span class="badge">점수 <b id="hudScore">0</b></span>
-        <span class="badge">상태 <b id="hudState">준비</b></span>
-      </div>
-      <div class="controls">
-        <button id="btnShuffle" class="primary">섞기</button>
-        <button id="btnReveal" class="secondary" disabled>정답 공개</button>
-        <button id="btnQuit" class="ghost">그만</button>
-      </div>
-    </div>
-
-    <div id="table" class="table" aria-live="polite" aria-label="게임 테이블"></div>
-  </section>
-
-  <!-- 결과 화면 -->
-  <section id="screenResult" class="screen">
-    <div class="result-card">
-      <h2>결과</h2>
-      <div id="resultEmoji" class="result-emoji">🙂</div>
-      <p id="resultText" class="result-text">결과가 여기에 표시됩니다.</p>
-
-      <div class="score-strip">이번 판: <b id="roundScore">0</b> · 누적: <b id="totalScore">0</b></div>
-
-      <form id="saveScoreForm" class="save-form" autocomplete="off">
-        <label>이름(3~12자): <input id="playerName" maxlength="12" required></label>
-        <button class="secondary" type="submit">점수 저장</button>
-      </form>
-
-      <div class="result-actions">
-        <button id="btnRetry" class="primary">같은 단계 재도전</button>
-        <button id="btnHome" class="ghost">메인으로</button>
-      </div>
-    </div>
-  </section>
-
   <!-- 규칙 모달 -->
-  <dialog id="rulesDialog" class="modal">
+  <dialog id="modal-rules">
+    <h3>게임 규칙</h3>
+    <ol>
+      <li>난이도를 고른 뒤 <em>게임 시작</em>을 누릅니다.</li>
+      <li>섞기가 끝나면 공이 있는 컵을 맞춰주세요.</li>
+      <li>모든 단계에서 셔플 중에는 공이 숨겨집니다. 4단계에서는 <em>정답 공개</em>를 1회 사용할 수 있습니다.</li>
+    </ol>
     <form method="dialog">
-      <h3>게임 규칙</h3>
-      <ol>
-        <li>공 위치를 보여준 뒤(4단계 제외) 컵을 연속으로 섞습니다.</li>
-        <li>섞기가 끝나면 정답 컵을 클릭합니다.</li>
-        <li>클릭 시 컵이 들어올려지며(리프트) 결과를 공개합니다.</li>
-      </ol>
-      <p class="small">점수: 1/2/3/4단계 순서로 10·20·30·50점</p>
-      <menu><button value="cancel" class="ghost">닫기</button></menu>
+      <button>닫기</button>
     </form>
   </dialog>
 
   <!-- 순위 모달 -->
-  <dialog id="leaderboardDialog" class="modal">
+  <dialog id="modal-leader">
+    <h3>순위표</h3>
+    <table id="tbl-leader">
+      <thead>
+        <tr><th>순위</th><th>이름</th><th>성공</th><th>실패</th><th>점수</th><th>시간</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
     <form method="dialog">
-      <h3>상위 5명</h3>
-      <ol id="leaderboardList" class="leaderboard"></ol>
-      <menu><button value="cancel" class="ghost">닫기</button></menu>
+      <button>닫기</button>
     </form>
   </dialog>
 
-  <footer class="app-footer"><small>© Tech.LAB • 축제 부스 데모</small></footer>
+  <footer class="site-footer">
+    <small>© Tech.LAB • Shell Game</small>
+  </footer>
 
   <script src="app.js"></script>
 </body>
